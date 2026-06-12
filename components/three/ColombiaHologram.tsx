@@ -3,31 +3,48 @@ import { useRef, useMemo } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-// Simplified Colombia border coordinates [lng, lat]
+// Real Colombia border coordinates from Natural Earth GeoJSON [lng, lat]
 const COLOMBIA_COORDS: [number, number][] = [
-  [-76.57, 8.67], [-77.35, 8.37], [-77.49, 7.70], [-77.72, 7.71],
-  [-77.81, 8.00], [-77.49, 8.35], [-77.36, 8.67], [-76.99, 8.87],
-  [-76.57, 9.45], [-75.66, 10.20], [-74.87, 11.10], [-74.20, 11.30],
-  [-73.61, 11.10], [-72.69, 11.44], [-72.24, 11.87], [-71.98, 11.43],
-  [-71.32, 11.78], [-71.25, 11.75], [-71.31, 10.44], [-72.40, 9.44],
-  [-72.66, 7.49], [-72.44, 7.46], [-72.08, 6.96], [-72.09, 6.44],
-  [-71.75, 6.17], [-70.98, 6.48], [-70.09, 6.52], [-69.44, 6.14],
-  [-68.48, 6.15], [-67.87, 6.47], [-67.44, 6.02], [-67.64, 4.70],
-  [-67.82, 4.23], [-67.39, 3.37], [-67.85, 2.86], [-67.30, 2.09],
-  [-66.87, 1.22], [-67.07, 1.17], [-67.26, 1.73], [-68.27, 1.95],
-  [-68.47, 0.95], [-70.02, 0.55], [-70.09, -0.19], [-70.63, -0.73],
-  [-70.10, -1.08], [-70.29, -2.24], [-70.47, -2.47], [-71.25, -2.33],
-  [-72.10, -2.21], [-72.89, -2.40], [-73.67, -1.26], [-74.29, -0.53],
-  [-74.56, 0.51], [-75.26, 0.12], [-75.82, -0.07], [-76.29, 0.42],
-  [-76.84, 0.55], [-77.26, 0.84], [-77.42, 1.13], [-77.99, 1.33],
-  [-78.60, 1.31], [-78.73, 2.00], [-78.22, 2.67], [-77.90, 3.45],
-  [-77.50, 4.19], [-77.27, 4.69], [-77.38, 5.57], [-77.22, 6.02],
-  [-77.50, 6.80], [-77.35, 7.70],
+  [-75.373223,-0.152032],[-75.801466,0.084801],[-76.292314,0.416047],
+  [-76.57638,0.256936],[-77.424984,0.395687],[-77.668613,0.825893],
+  [-77.855061,0.809925],[-78.855259,1.380924],[-78.990935,1.69137],
+  [-78.617831,1.766404],[-78.662118,2.267355],[-78.42761,2.629556],
+  [-77.931543,2.696606],[-77.510431,3.325017],[-77.12769,3.849636],
+  [-77.496272,4.087606],[-77.307601,4.667984],[-77.533221,5.582812],
+  [-77.318815,5.845354],[-77.476661,6.691116],[-77.881571,7.223771],
+  [-77.753414,7.70984],[-77.431108,7.638061],[-77.242566,7.935278],
+  [-77.474723,8.524286],[-77.353361,8.670505],[-76.836674,8.638749],
+  [-76.086384,9.336821],[-75.6746,9.443248],[-75.664704,9.774003],
+  [-75.480426,10.61899],[-74.906895,11.083045],[-74.276753,11.102036],
+  [-74.197223,11.310473],[-73.414764,11.227015],[-72.627835,11.731972],
+  [-72.238195,11.95555],[-71.75409,12.437303],[-71.399822,12.376041],
+  [-71.137461,12.112982],[-71.331584,11.776284],[-71.973922,11.608672],
+  [-72.227575,11.108702],[-72.614658,10.821975],[-72.905286,10.450344],
+  [-73.027604,9.73677],[-73.304952,9.152],[-72.78873,9.085027],
+  [-72.660495,8.625288],[-72.439862,8.405275],[-72.360901,8.002638],
+  [-72.479679,7.632506],[-72.444487,7.423785],[-72.198352,7.340431],
+  [-71.960176,6.991615],[-70.674234,7.087785],[-70.093313,6.960376],
+  [-69.38948,6.099861],[-68.985319,6.206805],[-68.265052,6.153268],
+  [-67.695087,6.267318],[-67.34144,6.095468],[-67.521532,5.55687],
+  [-67.744697,5.221129],[-67.823012,4.503937],[-67.621836,3.839482],
+  [-67.337564,3.542342],[-67.303173,3.318454],[-67.809938,2.820655],
+  [-67.447092,2.600281],[-67.181294,2.250638],[-66.876326,1.253361],
+  [-67.065048,1.130112],[-67.259998,1.719999],[-67.53781,2.037163],
+  [-67.868565,1.692455],[-69.816973,1.714805],[-69.804597,1.089081],
+  [-69.218638,0.985677],[-69.252434,0.602651],[-69.452396,0.706159],
+  [-70.015566,0.541414],[-70.020656,-0.185156],[-69.577065,-0.549992],
+  [-69.420486,-1.122619],[-69.444102,-1.556287],[-69.893635,-4.298187],
+  [-70.394044,-3.766591],[-70.692682,-3.742872],[-70.047709,-2.725156],
+  [-70.813476,-2.256865],[-71.413646,-2.342802],[-71.774761,-2.16979],
+  [-72.325787,-2.434218],[-73.070392,-2.308954],[-73.659504,-1.260491],
+  [-74.122395,-1.002833],[-74.441601,-0.53082],[-75.106625,-0.057205],
+  [-75.373223,-0.152032],
 ];
 
-// Convert [lng, lat] to normalized [x, y] centered on Colombia
-const CENTER_LNG = -73.5;
-const CENTER_LAT = 4.0;
+// Center and scale calculated from actual bounding box
+// lng: -79.0 to -66.9 → center -72.95, lat: -4.3 to 12.44 → center 4.07
+const CENTER_LNG = -72.95;
+const CENTER_LAT = 4.07;
 const SCALE = 9;
 
 function normalize([lng, lat]: [number, number]): [number, number] {
@@ -36,6 +53,7 @@ function normalize([lng, lat]: [number, number]): [number, number] {
 
 function ColombiaShape() {
   const meshRef = useRef<THREE.Mesh>(null);
+  const edgeRef = useRef<THREE.Line>(null);
   const particlesRef = useRef<THREE.Points>(null);
   const { mouse } = useThree();
 
@@ -46,46 +64,39 @@ function ColombiaShape() {
     pts.slice(1).forEach(([x, y]) => s.lineTo(x, y));
     s.closePath();
 
-    // Points along border for particle trail
     const borderPts: number[] = [];
-    pts.forEach(([x, y]) => {
-      borderPts.push(x, y, 0.08);
-    });
+    pts.forEach(([x, y]) => borderPts.push(x, y, 0.08));
 
     return { shape: s, borderPoints: new Float32Array(borderPts) };
   }, []);
 
-  const extrudeSettings = useMemo<THREE.ExtrudeGeometryOptions>(
-    () => ({ depth: 0.04, bevelEnabled: false }),
-    []
-  );
-
   const geometry = useMemo(
-    () => new THREE.ExtrudeGeometry(shape, extrudeSettings),
-    [shape, extrudeSettings]
+    () => new THREE.ExtrudeGeometry(shape, { depth: 0.04, bevelEnabled: false }),
+    [shape]
   );
 
-  const hologramMaterial = useMemo(
+  const fillMaterial = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
         color: "#FF3D00",
         emissive: "#FF3D00",
         emissiveIntensity: 0.8,
         transparent: true,
-        opacity: 0.35,
+        opacity: 0.32,
         side: THREE.DoubleSide,
-        wireframe: false,
       }),
     []
   );
 
-  const edgeMaterial = useMemo(
+  const wireMaterial = useMemo(
     () =>
-      new THREE.LineBasicMaterial({
-        color: "#FF6B35",
+      new THREE.MeshStandardMaterial({
+        color: "#FF3D00",
+        emissive: "#FF3D00",
+        emissiveIntensity: 0.3,
         transparent: true,
-        opacity: 0.9,
-        linewidth: 1,
+        opacity: 0.1,
+        wireframe: true,
       }),
     []
   );
@@ -93,66 +104,64 @@ function ColombiaShape() {
   const edgeGeometry = useMemo(() => {
     const pts2d = COLOMBIA_COORDS.map(normalize);
     const points3d = pts2d.map(([x, y]) => new THREE.Vector3(x, y, 0.06));
-    points3d.push(points3d[0]); // close path
+    points3d.push(points3d[0]);
     return new THREE.BufferGeometry().setFromPoints(points3d);
   }, []);
 
-  const particlesMaterial = useMemo(
+  const edgeMaterial = useMemo(
     () =>
-      new THREE.PointsMaterial({
-        color: "#FF3D00",
-        size: 0.025,
+      new THREE.LineBasicMaterial({
+        color: "#FF6B35",
         transparent: true,
-        opacity: 0.9,
+        opacity: 0.95,
       }),
     []
   );
 
   const particlesGeo = useMemo(() => {
     const geo = new THREE.BufferGeometry();
-    geo.setAttribute(
-      "position",
-      new THREE.BufferAttribute(borderPoints, 3)
-    );
+    geo.setAttribute("position", new THREE.BufferAttribute(borderPoints, 3));
     return geo;
   }, [borderPoints]);
 
+  const particlesMat = useMemo(
+    () =>
+      new THREE.PointsMaterial({
+        color: "#FF3D00",
+        size: 0.022,
+        transparent: true,
+        opacity: 1,
+      }),
+    []
+  );
+
   useFrame((state) => {
     const t = state.clock.elapsedTime;
+    const rotation = {
+      y: Math.sin(t * 0.25) * 0.18,
+      x: Math.sin(t * 0.18) * 0.05 + mouse.y * 0.06,
+      z: Math.cos(t * 0.2) * 0.03 + mouse.x * 0.04,
+    };
+
     if (meshRef.current) {
-      meshRef.current.rotation.y = Math.sin(t * 0.3) * 0.15;
-      meshRef.current.rotation.x = Math.sin(t * 0.2) * 0.06 + mouse.y * 0.05;
-      meshRef.current.rotation.z = Math.cos(t * 0.25) * 0.04 + mouse.x * 0.04;
-      // Pulse opacity
-      (hologramMaterial as THREE.MeshStandardMaterial).emissiveIntensity =
-        0.7 + Math.sin(t * 1.5) * 0.3;
-      (hologramMaterial as THREE.MeshStandardMaterial).opacity =
-        0.28 + Math.sin(t * 0.8) * 0.08;
+      meshRef.current.rotation.set(rotation.x, rotation.y, rotation.z);
+      fillMaterial.emissiveIntensity = 0.7 + Math.sin(t * 1.5) * 0.3;
+      fillMaterial.opacity = 0.27 + Math.sin(t * 0.9) * 0.08;
+    }
+    if (edgeRef.current) {
+      edgeRef.current.rotation.set(rotation.x, rotation.y, rotation.z);
     }
     if (particlesRef.current) {
-      particlesRef.current.rotation.copy(meshRef.current!.rotation);
+      particlesRef.current.rotation.set(rotation.x, rotation.y, rotation.z);
     }
   });
 
   return (
     <group>
-      <mesh ref={meshRef} geometry={geometry} material={hologramMaterial} />
-      <mesh geometry={geometry}>
-        <meshStandardMaterial
-          color="#FF3D00"
-          emissive="#FF3D00"
-          emissiveIntensity={0.4}
-          transparent
-          opacity={0.12}
-          wireframe
-        />
-      </mesh>
-      <lineLoop geometry={edgeGeometry} material={edgeMaterial} />
-      <points
-        ref={particlesRef}
-        geometry={particlesGeo}
-        material={particlesMaterial}
-      />
+      <mesh ref={meshRef} geometry={geometry} material={fillMaterial} />
+      <mesh geometry={geometry} material={wireMaterial} />
+      <primitive object={new THREE.Line(edgeGeometry, edgeMaterial)} ref={edgeRef} />
+      <points ref={particlesRef} geometry={particlesGeo} material={particlesMat} />
     </group>
   );
 }
@@ -160,9 +169,9 @@ function ColombiaShape() {
 export default function ColombiaHologram() {
   return (
     <>
-      <ambientLight intensity={0.2} />
-      <pointLight position={[0, 0, 3]} color="#FF3D00" intensity={2} />
-      <pointLight position={[-2, 2, 1]} color="#FF6B35" intensity={1} />
+      <ambientLight intensity={0.15} />
+      <pointLight position={[0, 0, 3]} color="#FF3D00" intensity={2.5} />
+      <pointLight position={[-1.5, 1.5, 1]} color="#FF6B35" intensity={1.2} />
       <ColombiaShape />
     </>
   );
