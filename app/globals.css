@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #080808;
+  --color-accent: #FF3D00;
+  --color-accent-hover: #FF6B35;
+  --color-text: #F0EBE3;
+  --color-muted: #888880;
+  --color-card: #1A1A1A;
+  --color-border: #2A2A2A;
+
+  --font-display: var(--font-syne);
+  --font-body: var(--font-space-grotesk);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #080808;
+  color: #F0EBE3;
+}
+
+body {
+  background-color: #080808;
+  color: #F0EBE3;
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Hide default cursor when custom cursor is active */
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #080808;
+}
+::-webkit-scrollbar-thumb {
+  background: #FF3D00;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FF6B35;
+}
+
+/* Selection */
+::selection {
+  background: #FF3D00;
+  color: #080808;
+}
+
+/* Smooth section reveal base state */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+}
