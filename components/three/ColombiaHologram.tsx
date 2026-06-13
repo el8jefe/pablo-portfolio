@@ -41,20 +41,18 @@ const COLOMBIA_COORDS: [number, number][] = [
   [-75.373223,-0.152032],
 ];
 
-// Center and scale calculated from actual bounding box
-// lng: -79.0 to -66.9 → center -72.95, lat: -4.3 to 12.44 → center 4.07
+// Smaller scale = bigger map on screen
 const CENTER_LNG = -72.95;
 const CENTER_LAT = 4.07;
-const SCALE = 9;
+const SCALE = 6;
 
 function normalize([lng, lat]: [number, number]): [number, number] {
   return [(lng - CENTER_LNG) / SCALE, (lat - CENTER_LAT) / SCALE];
 }
 
 function ColombiaShape() {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const edgeRef = useRef<THREE.Line>(null);
-  const particlesRef = useRef<THREE.Points>(null);
+  const groupRef = useRef<THREE.Group>(null);
+  const fillMaterial = useRef<THREE.MeshStandardMaterial>(null);
   const { mouse } = useThree();
 
   const { shape, borderPoints } = useMemo(() => {
@@ -63,58 +61,45 @@ function ColombiaShape() {
     s.moveTo(pts[0][0], pts[0][1]);
     pts.slice(1).forEach(([x, y]) => s.lineTo(x, y));
     s.closePath();
-
     const borderPts: number[] = [];
     pts.forEach(([x, y]) => borderPts.push(x, y, 0.08));
-
     return { shape: s, borderPoints: new Float32Array(borderPts) };
   }, []);
 
   const geometry = useMemo(
-    () => new THREE.ExtrudeGeometry(shape, { depth: 0.04, bevelEnabled: false }),
+    () => new THREE.ExtrudeGeometry(shape, { depth: 0.05, bevelEnabled: false }),
     [shape]
   );
 
-  const fillMaterial = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: "#FF3D00",
-        emissive: "#FF3D00",
-        emissiveIntensity: 0.8,
-        transparent: true,
-        opacity: 0.32,
-        side: THREE.DoubleSide,
-      }),
-    []
-  );
-
-  const wireMaterial = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: "#FF3D00",
-        emissive: "#FF3D00",
-        emissiveIntensity: 0.3,
-        transparent: true,
-        opacity: 0.1,
-        wireframe: true,
-      }),
-    []
-  );
-
-  const edgeGeometry = useMemo(() => {
-    const pts2d = COLOMBIA_COORDS.map(normalize);
-    const points3d = pts2d.map(([x, y]) => new THREE.Vector3(x, y, 0.06));
-    points3d.push(points3d[0]);
-    return new THREE.BufferGeometry().setFromPoints(points3d);
+  const mat = useMemo(() => {
+    const m = new THREE.MeshStandardMaterial({
+      color: "#FF3D00",
+      emissive: "#FF3D00",
+      emissiveIntensity: 1.2,
+      transparent: true,
+      opacity: 0.5,
+      side: THREE.DoubleSide,
+    });
+    (fillMaterial as React.MutableRefObject<THREE.MeshStandardMaterial>).current = m;
+    return m;
   }, []);
 
-  const edgeMaterial = useMemo(
-    () =>
-      new THREE.LineBasicMaterial({
-        color: "#FF6B35",
-        transparent: true,
-        opacity: 0.95,
-      }),
+  const wireMat = useMemo(
+    () => new THREE.MeshStandardMaterial({
+      color: "#FF3D00", emissive: "#FF3D00", emissiveIntensity: 0.4,
+      transparent: true, opacity: 0.12, wireframe: true,
+    }), []
+  );
+
+  const edgeGeo = useMemo(() => {
+    const pts2d = COLOMBIA_COORDS.map(normalize);
+    const pts3d = pts2d.map(([x, y]) => new THREE.Vector3(x, y, 0.06));
+    pts3d.push(pts3d[0]);
+    return new THREE.BufferGeometry().setFromPoints(pts3d);
+  }, []);
+
+  const edgeMat = useMemo(
+    () => new THREE.LineBasicMaterial({ color: "#FF6B35", transparent: true, opacity: 1 }),
     []
   );
 
@@ -125,43 +110,31 @@ function ColombiaShape() {
   }, [borderPoints]);
 
   const particlesMat = useMemo(
-    () =>
-      new THREE.PointsMaterial({
-        color: "#FF3D00",
-        size: 0.022,
-        transparent: true,
-        opacity: 1,
-      }),
+    () => new THREE.PointsMaterial({ color: "#FF3D00", size: 0.028, transparent: true, opacity: 1 }),
     []
   );
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
-    const rotation = {
-      y: Math.sin(t * 0.25) * 0.18,
-      x: Math.sin(t * 0.18) * 0.05 + mouse.y * 0.06,
-      z: Math.cos(t * 0.2) * 0.03 + mouse.x * 0.04,
-    };
-
-    if (meshRef.current) {
-      meshRef.current.rotation.set(rotation.x, rotation.y, rotation.z);
-      fillMaterial.emissiveIntensity = 0.7 + Math.sin(t * 1.5) * 0.3;
-      fillMaterial.opacity = 0.27 + Math.sin(t * 0.9) * 0.08;
-    }
-    if (edgeRef.current) {
-      edgeRef.current.rotation.set(rotation.x, rotation.y, rotation.z);
-    }
-    if (particlesRef.current) {
-      particlesRef.current.rotation.set(rotation.x, rotation.y, rotation.z);
+    if (!groupRef.current) return;
+    // Full continuous 360 Y rotation
+    groupRef.current.rotation.y = t * 0.35;
+    // Subtle tilt with mouse
+    groupRef.current.rotation.x = mouse.y * 0.08;
+    groupRef.current.rotation.z = mouse.x * 0.04;
+    // Pulse glow
+    if (fillMaterial.current) {
+      fillMaterial.current.emissiveIntensity = 1.0 + Math.sin(t * 1.5) * 0.4;
+      fillMaterial.current.opacity = 0.45 + Math.sin(t * 0.9) * 0.1;
     }
   });
 
   return (
-    <group>
-      <mesh ref={meshRef} geometry={geometry} material={fillMaterial} />
-      <mesh geometry={geometry} material={wireMaterial} />
-      <primitive object={new THREE.Line(edgeGeometry, edgeMaterial)} ref={edgeRef} />
-      <points ref={particlesRef} geometry={particlesGeo} material={particlesMat} />
+    <group ref={groupRef}>
+      <mesh geometry={geometry} material={mat} />
+      <mesh geometry={geometry} material={wireMat} />
+      <lineLoop geometry={edgeGeo} material={edgeMat} />
+      <points geometry={particlesGeo} material={particlesMat} />
     </group>
   );
 }
@@ -169,9 +142,9 @@ function ColombiaShape() {
 export default function ColombiaHologram() {
   return (
     <>
-      <ambientLight intensity={0.15} />
-      <pointLight position={[0, 0, 3]} color="#FF3D00" intensity={2.5} />
-      <pointLight position={[-1.5, 1.5, 1]} color="#FF6B35" intensity={1.2} />
+      <ambientLight intensity={0.1} />
+      <pointLight position={[0, 0, 3]} color="#FF3D00" intensity={3} />
+      <pointLight position={[-2, 2, 1]} color="#FF6B35" intensity={1.5} />
       <ColombiaShape />
     </>
   );

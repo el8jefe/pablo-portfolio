@@ -80,7 +80,7 @@ export default function Skills() {
               <div className="font-body font-medium text-text text-sm group-hover:text-accent transition-colors">
                 {name}
               </div>
-              <div className="font-body text-xs text-muted mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="font-body text-xs text-muted mt-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                 {category}
               </div>
               {/* Hover accent corner */}

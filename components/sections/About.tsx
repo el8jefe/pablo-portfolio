@@ -90,19 +90,20 @@ export default function About() {
             About Me
           </p>
           <h2 className="bio-line font-display font-bold text-4xl md:text-5xl text-text leading-tight mb-8">
-            Colombian roots,
+            Born in Medellín.
             <br />
-            building in the U.S.
+            Built in the U.S.
           </h2>
           <p className="bio-line font-body text-muted leading-relaxed mb-4 text-lg">
-            I'm Pablo Rincon — a developer and builder with deep Colombian roots,
-            now based in the United States. I build things that feel as alive as
-            they look: fast, intentional, and built to last.
+            I&apos;m Pablo Rincon — born in Medellín, Colombia, and raised in the
+            United States since I was eight. I build systems, tools, and agents —
+            things that feel alive: fast, intentional, and built to keep pace with
+            technology as it moves.
           </p>
           <p className="bio-line font-body text-muted leading-relaxed mb-8">
-            From Bogotá to the U.S., I bring a perspective shaped by two cultures,
-            a relentless work ethic, and a genuine obsession with craft. Whether
-            it's a product, a website, or an idea — I build it like it matters.
+            I bring a perspective shaped by two cultures, a relentless work ethic,
+            and a genuine obsession with craft. Whether it&apos;s a product, a website,
+            or an idea — I build it like it matters.
           </p>
 
           <div className="bio-line flex gap-4">

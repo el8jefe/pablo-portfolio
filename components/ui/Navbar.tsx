@@ -38,7 +38,7 @@ export default function Navbar() {
     >
       <a
         href="#hero"
-        className="font-display font-bold text-lg tracking-widest text-text hover:text-accent transition-colors"
+        className="font-display font-bold text-lg tracking-widest text-text hover:text-accent transition-colors ml-2"
       >
         PR
       </a>
