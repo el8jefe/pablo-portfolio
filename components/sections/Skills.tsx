@@ -18,10 +18,20 @@ const SKILLS = [
   { name: "Tailwind", category: "Styling" },
   { name: "Supabase", category: "Database" },
   { name: "PostgreSQL", category: "Database" },
+  { name: "FastAPI", category: "Backend" },
+  { name: "Stripe", category: "Payments" },
+  { name: "Anthropic", category: "AI" },
+  { name: "Claude", category: "AI" },
+  { name: "Zod", category: "Validation" },
   { name: "Vercel", category: "Deploy" },
+  { name: "Railway", category: "Deploy" },
+  { name: "Docker", category: "Infra" },
+  { name: "Firecrawl", category: "Tooling" },
   { name: "Git", category: "Tooling" },
   { name: "Figma", category: "Design" },
   { name: "Framer", category: "Design" },
+  { name: "Cursor", category: "IDE" },
+  { name: "Warp", category: "Terminal" },
   { name: "Sanity", category: "CMS" },
   { name: "REST APIs", category: "Backend" },
 ];
@@ -39,7 +49,7 @@ export default function Skills() {
           y: 0,
           scale: 1,
           duration: 0.5,
-          stagger: 0.05,
+          stagger: 0.04,
           ease: "power3.out",
           scrollTrigger: {
             trigger: ".skills-grid",
@@ -57,7 +67,7 @@ export default function Skills() {
     <section
       id="skills"
       ref={sectionRef}
-      className="py-24 md:py-36 px-6 bg-card/30 border-y border-border"
+      className="py-24 md:py-36 px-6 md:px-12 lg:px-16 bg-card/30 border-y border-border"
       aria-label="Skills section"
     >
       <div className="max-w-6xl mx-auto">
@@ -83,7 +93,6 @@ export default function Skills() {
               <div className="font-body text-xs text-muted mt-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                 {category}
               </div>
-              {/* Hover accent corner */}
               <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-accent opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           ))}

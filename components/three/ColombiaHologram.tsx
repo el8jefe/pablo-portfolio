@@ -41,10 +41,10 @@ const COLOMBIA_COORDS: [number, number][] = [
   [-75.373223,-0.152032],
 ];
 
-// Smaller scale = bigger map on screen
 const CENTER_LNG = -72.95;
 const CENTER_LAT = 4.07;
 const SCALE = 6;
+const GLOBE_R = 1.55;
 
 function normalize([lng, lat]: [number, number]): [number, number] {
   return [(lng - CENTER_LNG) / SCALE, (lat - CENTER_LAT) / SCALE];
@@ -77,7 +77,7 @@ function ColombiaShape() {
       emissive: "#FF3D00",
       emissiveIntensity: 1.2,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.6,
       side: THREE.DoubleSide,
     });
     (fillMaterial as React.MutableRefObject<THREE.MeshStandardMaterial>).current = m;
@@ -114,23 +114,89 @@ function ColombiaShape() {
     []
   );
 
+  // Globe wireframe sphere
+  const sphereGeo = useMemo(() => new THREE.SphereGeometry(GLOBE_R, 24, 16), []);
+  const sphereWireMat = useMemo(
+    () => new THREE.MeshBasicMaterial({
+      color: "#FF3D00",
+      wireframe: true,
+      transparent: true,
+      opacity: 0.035,
+    }), []
+  );
+
+  // Lat/lng grid as a single LineSegments geometry
+  const gridGeo = useMemo(() => {
+    const positions: number[] = [];
+
+    // Latitude rings every 15°, from -75 to +75
+    for (let latDeg = -75; latDeg <= 75; latDeg += 15) {
+      const lat = (latDeg * Math.PI) / 180;
+      const y = GLOBE_R * Math.sin(lat);
+      const r = GLOBE_R * Math.cos(lat);
+      const N = 64;
+      for (let i = 0; i < N; i++) {
+        const t1 = (i / N) * Math.PI * 2;
+        const t2 = ((i + 1) / N) * Math.PI * 2;
+        positions.push(r * Math.cos(t1), y, r * Math.sin(t1));
+        positions.push(r * Math.cos(t2), y, r * Math.sin(t2));
+      }
+    }
+
+    // Longitude lines every 30°
+    for (let lngDeg = 0; lngDeg < 360; lngDeg += 30) {
+      const lng = (lngDeg * Math.PI) / 180;
+      const M = 32;
+      for (let j = 0; j < M; j++) {
+        const phi1 = -Math.PI / 2 + (j / M) * Math.PI;
+        const phi2 = -Math.PI / 2 + ((j + 1) / M) * Math.PI;
+        positions.push(
+          GLOBE_R * Math.cos(phi1) * Math.cos(lng),
+          GLOBE_R * Math.sin(phi1),
+          GLOBE_R * Math.cos(phi1) * Math.sin(lng),
+        );
+        positions.push(
+          GLOBE_R * Math.cos(phi2) * Math.cos(lng),
+          GLOBE_R * Math.sin(phi2),
+          GLOBE_R * Math.cos(phi2) * Math.sin(lng),
+        );
+      }
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    return geo;
+  }, []);
+
+  const gridMat = useMemo(
+    () => new THREE.LineBasicMaterial({
+      color: "#FF3D00",
+      transparent: true,
+      opacity: 0.11,
+    }), []
+  );
+
   useFrame((state) => {
     const t = state.clock.elapsedTime;
     if (!groupRef.current) return;
-    // Full continuous 360 Y rotation
     groupRef.current.rotation.y = t * 0.35;
-    // Subtle tilt with mouse
     groupRef.current.rotation.x = mouse.y * 0.08;
     groupRef.current.rotation.z = mouse.x * 0.04;
-    // Pulse glow
     if (fillMaterial.current) {
       fillMaterial.current.emissiveIntensity = 1.0 + Math.sin(t * 1.5) * 0.4;
-      fillMaterial.current.opacity = 0.45 + Math.sin(t * 0.9) * 0.1;
+      fillMaterial.current.opacity = 0.55 + Math.sin(t * 0.9) * 0.1;
     }
   });
 
   return (
     <group ref={groupRef}>
+      {/* Globe base sphere wireframe */}
+      <mesh geometry={sphereGeo} material={sphereWireMat} />
+
+      {/* Lat/lng grid lines */}
+      <lineSegments geometry={gridGeo} material={gridMat} />
+
+      {/* Colombia shape — floats in front of globe center */}
       <mesh geometry={geometry} material={mat} />
       <mesh geometry={geometry} material={wireMat} />
       <lineLoop geometry={edgeGeo} material={edgeMat} />

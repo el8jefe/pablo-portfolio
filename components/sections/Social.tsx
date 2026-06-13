@@ -11,7 +11,6 @@ function TwitterEmbed() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load Twitter widgets script
     const script = document.createElement("script");
     script.src = "https://platform.twitter.com/widgets.js";
     script.async = true;
@@ -60,7 +59,7 @@ function InstagramPlaceholder() {
           rel="noopener noreferrer"
           className="font-body text-xs text-muted hover:text-accent transition-colors uppercase tracking-widest"
         >
-          @p.rincon31 on Instagram ↗
+          @p.rincon31 on Instagram
         </a>
       </div>
     </div>
@@ -97,10 +96,11 @@ export default function Social() {
     <section
       id="social"
       ref={sectionRef}
-      className="py-24 md:py-36 px-6 max-w-6xl mx-auto"
+      className="py-24 md:py-36 overflow-hidden"
       aria-label="Social feeds"
     >
-      <div className="mb-16">
+      {/* Header — stays within max-w container */}
+      <div className="max-w-6xl mx-auto px-6 mb-16">
         <p className="font-body text-xs tracking-[0.3em] text-accent uppercase mb-3">
           Find Me
         </p>
@@ -109,13 +109,16 @@ export default function Social() {
         </h2>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-10">
-        {/* Twitter */}
-        <div className="social-panel border border-border bg-card/50 p-6">
+      {/* Full-width edge-to-edge panels */}
+      <div className="grid md:grid-cols-2">
+        {/* Twitter — left panel, touches left edge */}
+        <div
+          className="social-panel bg-card/50 border-b md:border-b-0 md:border-r border-border px-6 py-8"
+          style={{ paddingLeft: "max(1.5rem, calc((100vw - 72rem) / 2))" }}
+        >
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
-            {/* X / Twitter icon */}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-muted" aria-hidden="true">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
             </svg>
             <span className="font-body text-sm text-muted uppercase tracking-widest">Twitter / X</span>
             <a
@@ -130,14 +133,16 @@ export default function Social() {
           <TwitterEmbed />
         </div>
 
-        {/* Instagram */}
-        <div className="social-panel border border-border bg-card/50 p-6">
+        {/* Instagram — right panel, touches right edge */}
+        <div
+          className="social-panel bg-card/50 border-border md:border-l px-6 py-8"
+          style={{ paddingRight: "max(1.5rem, calc((100vw - 72rem) / 2))" }}
+        >
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
-            {/* Instagram icon */}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted" aria-hidden="true">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-              <circle cx="12" cy="12" r="4"/>
-              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+              <circle cx="12" cy="12" r="4" />
+              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
             </svg>
             <span className="font-body text-sm text-muted uppercase tracking-widest">Instagram</span>
             <a

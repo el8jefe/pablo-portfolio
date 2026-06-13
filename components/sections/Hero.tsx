@@ -186,7 +186,7 @@ export default function Hero() {
           aria-hidden="true"
         >
           <Canvas
-            camera={{ position: [0, 0, 3.5], fov: 45 }}
+            camera={{ position: [0, 0, 4], fov: 42 }}
             gl={{ antialias: true, alpha: true }}
             style={{ background: "transparent", width: "100%", height: "100%" }}
           >
