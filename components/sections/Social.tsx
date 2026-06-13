@@ -37,31 +37,29 @@ function TwitterEmbed() {
   );
 }
 
-function InstagramPlaceholder() {
+function InstagramCard() {
   return (
-    <div className="grid grid-cols-3 gap-2">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <a
-          key={i}
-          href="https://www.instagram.com/p.rincon31/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="aspect-square bg-card border border-border hover:border-accent transition-colors group relative overflow-hidden"
-          aria-label="Instagram post"
-        >
-          <div className="absolute inset-0 bg-accent/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-        </a>
-      ))}
-      <div className="col-span-3 text-center mt-2">
-        <a
-          href="https://www.instagram.com/p.rincon31/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-body text-xs text-muted hover:text-accent transition-colors uppercase tracking-widest"
-        >
-          @p.rincon31 on Instagram
-        </a>
+    <div className="flex flex-col items-center justify-center py-10 gap-6">
+      {/* Instagram gradient icon */}
+      <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)" }}>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.5" cy="6.5" r="0.5" fill="white" stroke="none" />
+        </svg>
       </div>
+      <div className="text-center">
+        <p className="font-display font-bold text-text text-xl mb-1">@p.rincon31</p>
+        <p className="font-body text-sm text-muted">Life, work, and Medellín moments</p>
+      </div>
+      <a
+        href="https://www.instagram.com/p.rincon31/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-body text-sm tracking-widest uppercase text-accent border border-accent px-6 py-2.5 hover:bg-accent hover:text-bg transition-all duration-300"
+      >
+        Follow on Instagram
+      </a>
     </div>
   );
 }
@@ -154,7 +152,7 @@ export default function Social() {
               @p.rincon31
             </a>
           </div>
-          <InstagramPlaceholder />
+          <InstagramCard />
         </div>
       </div>
     </section>

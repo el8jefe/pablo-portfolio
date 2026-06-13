@@ -60,6 +60,35 @@ const COLOMBIA_SVG_POINTS = [
 
 const SVG_POINTS_STR = COLOMBIA_SVG_POINTS.map(([x, y]) => `${x},${y}`).join(" ");
 
+function GlobeDecorSVG() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="-1.1 -1.1 2.2 2.2"
+      aria-hidden="true"
+      style={{ filter: "drop-shadow(0 0 5px #FF3D00)", flexShrink: 0 }}
+    >
+      <circle cx="0" cy="0" r="1" fill="none" stroke="#FF3D00" strokeWidth="0.09" />
+      {([-0.55, 0, 0.55] as number[]).map((y) => (
+        <ellipse
+          key={y}
+          cx="0"
+          cy={y}
+          rx={Math.sqrt(Math.max(0, 1 - y * y))}
+          ry={Math.sqrt(Math.max(0, 1 - y * y)) * 0.32}
+          fill="none"
+          stroke="#FF3D00"
+          strokeWidth="0.065"
+          strokeOpacity="0.7"
+        />
+      ))}
+      <ellipse cx="0" cy="0" rx="0.35" ry="1" fill="none" stroke="#FF3D00" strokeWidth="0.065" strokeOpacity="0.5" />
+      <ellipse cx="0" cy="0" rx="0.75" ry="1" fill="none" stroke="#FF3D00" strokeWidth="0.055" strokeOpacity="0.38" />
+    </svg>
+  );
+}
+
 function Typewriter() {
   const [index, setIndex] = useState(0);
   const [displayed, setDisplayed] = useState("");
@@ -224,9 +253,11 @@ export default function Hero() {
       <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
         <motion.p
           {...fadeUp(0.3)}
-          className="font-body text-sm tracking-[0.3em] text-muted uppercase mb-6"
+          className="font-body text-sm tracking-[0.3em] text-accent uppercase mb-6 flex items-center justify-center gap-3"
         >
+          <GlobeDecorSVG />
           Portfolio
+          <GlobeDecorSVG />
         </motion.p>
 
         <motion.h1

@@ -3,20 +3,42 @@ import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-const STATS = [
+export type SiteSettings = {
+  aboutHeading?: string;
+  aboutBio1?: string;
+  aboutBio2?: string;
+  stats?: { value: string; label: string }[];
+};
+
+const DEFAULT_STATS = [
   { value: "3+", label: "Years Building" },
   { value: "10+", label: "Projects Shipped" },
   { value: "🇨🇴", label: "Colombian Roots" },
-  { value: "🇺🇸", label: "Based in the U.S." },
+  { value: "🇺🇸", label: "Greenwich, CT" },
 ];
+
+const DEFAULT_HEADING = "Born in Medellín.\nBuilt in the U.S.";
+const DEFAULT_BIO1 =
+  "I'm Pablo Rincon — born in Medellín, Colombia, and raised in Greenwich, Connecticut since I was eight. I build systems, tools, and agents — things that feel alive: fast, intentional, and built to keep pace with technology as it moves.";
+const DEFAULT_BIO2 =
+  "I bring a perspective shaped by two cultures, a relentless work ethic, and a genuine obsession with craft. Whether it's a product, a website, or an idea — I build it like it matters.";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-export default function About() {
+interface AboutProps {
+  settings?: SiteSettings | null;
+}
+
+export default function About({ settings }: AboutProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const linesRef = useRef<HTMLDivElement>(null);
+
+  const heading = settings?.aboutHeading ?? DEFAULT_HEADING;
+  const bio1 = settings?.aboutBio1 ?? DEFAULT_BIO1;
+  const bio2 = settings?.aboutBio2 ?? DEFAULT_BIO2;
+  const stats = settings?.stats?.length ? settings.stats : DEFAULT_STATS;
 
   useEffect(() => {
     const lines = linesRef.current?.querySelectorAll(".bio-line");
@@ -62,6 +84,8 @@ export default function About() {
     return () => ctx.revert();
   }, []);
 
+  const headingLines = heading.split("\n");
+
   return (
     <section
       id="about"
@@ -74,11 +98,9 @@ export default function About() {
         <div className="relative">
           <div className="aspect-[3/4] bg-card border border-border overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent" />
-            {/* Photo will come from Sanity — placeholder for now */}
             <div className="absolute inset-0 flex items-center justify-center text-muted text-sm font-body">
               Photo
             </div>
-            {/* Accent corner decoration */}
             <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-accent" />
             <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-accent" />
           </div>
@@ -90,20 +112,14 @@ export default function About() {
             About Me
           </p>
           <h2 className="bio-line font-display font-bold text-4xl md:text-5xl text-text leading-tight mb-8">
-            Born in Medellín.
-            <br />
-            Built in the U.S.
+            {headingLines[0]}
+            {headingLines[1] && <><br />{headingLines[1]}</>}
           </h2>
           <p className="bio-line font-body text-muted leading-relaxed mb-4 text-lg">
-            I&apos;m Pablo Rincon — born in Medellín, Colombia, and raised in the
-            United States since I was eight. I build systems, tools, and agents —
-            things that feel alive: fast, intentional, and built to keep pace with
-            technology as it moves.
+            {bio1}
           </p>
           <p className="bio-line font-body text-muted leading-relaxed mb-8">
-            I bring a perspective shaped by two cultures, a relentless work ethic,
-            and a genuine obsession with craft. Whether it&apos;s a product, a website,
-            or an idea — I build it like it matters.
+            {bio2}
           </p>
 
           <div className="bio-line flex gap-4">
@@ -129,7 +145,7 @@ export default function About() {
 
       {/* Stats row */}
       <div className="stats-row grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 border-t border-border pt-12">
-        {STATS.map(({ value, label }) => (
+        {stats.map(({ value, label }) => (
           <div key={label} className="stat-item text-center">
             <div className="font-display font-bold text-3xl md:text-4xl text-text mb-1">
               {value}

@@ -4,6 +4,7 @@ import { visionTool } from "@sanity/vision";
 import { photo } from "@/sanity/schema/photo";
 import { project } from "@/sanity/schema/project";
 import { journal } from "@/sanity/schema/journal";
+import { siteSettings } from "@/sanity/schema/siteSettings";
 
 export default defineConfig({
   name: "pablo-portfolio",
@@ -12,6 +13,6 @@ export default defineConfig({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   plugins: [structureTool(), visionTool()],
   schema: {
-    types: [photo, project, journal],
+    types: [photo, project, journal, siteSettings],
   },
 });

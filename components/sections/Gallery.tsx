@@ -1,22 +1,42 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { gsap } from "@/lib/gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, AnimatePresence } from "framer-motion";
+import { urlFor } from "@/sanity/lib/client";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const GALLERY_ITEMS = Array.from({ length: 24 }, (_, i) => ({
-  id: i + 1,
-  src: null,
-  alt: `Photo ${i + 1}`,
-  caption: "",
-}));
+export type SanityPhoto = {
+  _id: string;
+  image: { asset: { _ref: string } };
+  caption?: string;
+  tags?: string[];
+  date?: string;
+};
+
+// Hardcoded Medellín night photo as fallback first tile
+const MEDELLIN_PHOTO = {
+  id: "medellin-night",
+  src: "https://images.unsplash.com/photo-1512250431446-d0b4b57b27ec?w=600&auto=format&fit=crop&q=80",
+  alt: "Medellín at night — city lights over the Andes",
+  caption: "Medellín, Antioquia — my home",
+};
+
+const PLACEHOLDER_COUNT = 23;
+
+interface LightboxItem {
+  id: string;
+  src: string | null;
+  alt: string;
+  caption?: string;
+}
 
 interface LightboxProps {
-  item: (typeof GALLERY_ITEMS)[0] | null;
+  item: LightboxItem | null;
   onClose: () => void;
 }
 
@@ -57,8 +77,14 @@ function Lightbox({ item, onClose }: LightboxProps) {
             >
               Close ✕
             </button>
-            <div className="aspect-square bg-border flex items-center justify-center">
-              <span className="text-muted font-body text-sm">{item.alt}</span>
+            <div className="aspect-square relative overflow-hidden bg-card">
+              {item.src ? (
+                <Image src={item.src} alt={item.alt} fill className="object-cover" sizes="(max-width: 768px) 100vw, 672px" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="text-muted font-body text-sm">{item.alt}</span>
+                </div>
+              )}
             </div>
             {item.caption && (
               <p className="font-body text-sm text-muted mt-4">{item.caption}</p>
@@ -70,9 +96,30 @@ function Lightbox({ item, onClose }: LightboxProps) {
   );
 }
 
-export default function Gallery() {
+interface GalleryProps {
+  photos?: SanityPhoto[];
+}
+
+export default function Gallery({ photos = [] }: GalleryProps) {
   const sectionRef = useRef<HTMLElement>(null);
-  const [selected, setSelected] = useState<(typeof GALLERY_ITEMS)[0] | null>(null);
+  const [selected, setSelected] = useState<LightboxItem | null>(null);
+
+  // Build tile list — Sanity photos take priority; fallback to Medellín + placeholders
+  const tiles: LightboxItem[] = photos.length > 0
+    ? photos.map((p) => ({
+        id: p._id,
+        src: urlFor(p.image).width(600).height(600).fit("crop").url(),
+        alt: p.caption ?? "Gallery photo",
+        caption: p.caption,
+      }))
+    : [
+        { ...MEDELLIN_PHOTO, id: MEDELLIN_PHOTO.id, src: MEDELLIN_PHOTO.src },
+        ...Array.from({ length: PLACEHOLDER_COUNT }, (_, i) => ({
+          id: `placeholder-${i + 1}`,
+          src: null,
+          alt: `Photo ${i + 1}`,
+        })),
+      ];
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -117,15 +164,24 @@ export default function Gallery() {
       </div>
 
       <div className="gallery-grid grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-0.5 px-0.5">
-        {GALLERY_ITEMS.map((item) => (
+        {tiles.map((tile) => (
           <button
-            key={item.id}
+            key={tile.id}
             className="gallery-tile group relative aspect-square overflow-hidden bg-card border border-border/40 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent"
-            onClick={() => setSelected(item)}
-            aria-label={`View ${item.alt}`}
+            onClick={() => setSelected(tile)}
+            aria-label={`View ${tile.alt}`}
           >
-            {/* Placeholder content */}
-            <div className="absolute inset-0 bg-gradient-to-br from-card to-bg" />
+            {tile.src ? (
+              <Image
+                src={tile.src}
+                alt={tile.alt}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                sizes="(max-width: 640px) 25vw, (max-width: 768px) 20vw, (max-width: 1024px) 17vw, 12.5vw"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-card to-bg" />
+            )}
 
             {/* Shimmer sweep on hover */}
             <div
@@ -136,7 +192,7 @@ export default function Gallery() {
               }}
             />
 
-            {/* Accent border glow on hover */}
+            {/* Accent border glow */}
             <div className="absolute inset-0 border border-accent opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
 
             {/* Corner spark */}
