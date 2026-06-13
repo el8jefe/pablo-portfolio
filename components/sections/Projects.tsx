@@ -7,7 +7,6 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Placeholder projects — will be replaced by Sanity data
 const PROJECTS = [
   {
     title: "TradeBuilt",
@@ -19,6 +18,15 @@ const PROJECTS = [
     gradient: "from-accent/20 to-transparent",
   },
   {
+    title: "VolarTech",
+    description: "Drone solutions business for agriculture and land management. Installs autonomous spraying drones and smart mowers across Antioquia, Puerto Rico, and Connecticut. Built between Guatapé and Greenwich — letting farms run themselves.",
+    tags: ["Business", "Drones", "AgTech", "Colombia"],
+    impact: "Operating in 3 markets: Antioquia, Puerto Rico, Connecticut.",
+    liveUrl: "#",
+    githubUrl: null,
+    gradient: "from-blue-900/25 to-transparent",
+  },
+  {
     title: "Lead Agent",
     description: "Automated scraping and outreach pipeline. Built for contractors in the U.S. market.",
     tags: ["Node.js", "PostgreSQL", "Twilio"],
@@ -28,6 +36,16 @@ const PROJECTS = [
     gradient: "from-red-900/20 to-transparent",
   },
 ];
+
+type Project = {
+  title: string;
+  description: string;
+  tags: string[];
+  impact: string;
+  liveUrl: string;
+  githubUrl: string | null;
+  gradient: string;
+};
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -74,7 +92,7 @@ export default function Projects() {
       </div>
 
       <div className="projects-grid grid md:grid-cols-3 gap-6">
-        {PROJECTS.map(({ title, description, tags, impact, liveUrl, githubUrl, gradient }) => (
+        {(PROJECTS as Project[]).map(({ title, description, tags, impact, liveUrl, githubUrl, gradient }) => (
           <article
             key={title}
             className="project-card group relative bg-card border border-border overflow-hidden hover:border-accent transition-all duration-500"
@@ -118,22 +136,31 @@ export default function Projects() {
 
               {/* Links */}
               <div className="flex gap-4 border-t border-border pt-4">
-                <a
-                  href={liveUrl}
-                  className="font-body text-xs text-muted hover:text-text transition-colors uppercase tracking-wider"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Live ↗
-                </a>
-                <a
-                  href={githubUrl}
-                  className="font-body text-xs text-muted hover:text-text transition-colors uppercase tracking-wider"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  GitHub ↗
-                </a>
+                {liveUrl !== "#" && (
+                  <a
+                    href={liveUrl}
+                    className="font-body text-xs text-muted hover:text-text transition-colors uppercase tracking-wider"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Live ↗
+                  </a>
+                )}
+                {githubUrl && githubUrl !== "#" && (
+                  <a
+                    href={githubUrl}
+                    className="font-body text-xs text-muted hover:text-text transition-colors uppercase tracking-wider"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    GitHub ↗
+                  </a>
+                )}
+                {liveUrl === "#" && !githubUrl && (
+                  <span className="font-body text-xs text-muted uppercase tracking-wider">
+                    Coming soon
+                  </span>
+                )}
               </div>
             </div>
           </article>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Syne, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import CustomCursor from "@/components/ui/CustomCursor";
+import FireworksCursor from "@/components/ui/FireworksCursor";
 import Navbar from "@/components/ui/Navbar";
 
 const syne = Syne({
@@ -40,6 +41,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-bg text-text antialiased overflow-x-hidden">
         <CustomCursor />
+        <FireworksCursor />
         <Navbar />
         {children}
       </body>
