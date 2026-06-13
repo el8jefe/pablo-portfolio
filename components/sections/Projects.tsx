@@ -19,15 +19,6 @@ const PROJECTS = [
     gradient: "from-accent/20 to-transparent",
   },
   {
-    title: "Model Agent",
-    description: "AI operating system for creator management. Automates Chaturbate and OnlyFans agency operations.",
-    tags: ["Python", "AI", "Automation"],
-    impact: "Reduced manual ops time by 80%.",
-    liveUrl: "#",
-    githubUrl: "#",
-    gradient: "from-orange-900/30 to-transparent",
-  },
-  {
     title: "Lead Agent",
     description: "Automated scraping and outreach pipeline. Built for contractors in the U.S. market.",
     tags: ["Node.js", "PostgreSQL", "Twilio"],
